@@ -1,0 +1,105 @@
+# to findout which column has high number of missing values
+dataset.isnull().mean() * 100
+
+dataset.hist(figsize=(20,20))
+
+# check if there is null in data
+dataset.isnull().sum()
+
+#Replace null with median
+dataset['FT4'].fillna(dataset['FT4'].median(), inplace=True)
+dataset['FT3'].fillna(dataset['FT3'].median(), inplace=True)
+dataset['T4'].fillna(dataset['T4'].median(), inplace=True)
+dataset['T3'].fillna(dataset['T3'].median(), inplace=True)
+dataset['TPOAb'].fillna(dataset['TPOAb'].median(), inplace=True)
+dataset['RBS'].fillna(dataset['RBS'].median(), inplace=True)
+dataset['Hb'].fillna(dataset['Hb'].median(), inplace=True)
+dataset['TC'].fillna(dataset['TC'].median(), inplace=True)
+dataset['TG'].fillna(dataset['TG'].median(), inplace=True)
+dataset['HDL'].fillna(dataset['HDL'].median(), inplace=True)
+dataset['LDL'].fillna(dataset['LDL'].median(), inplace=True)
+dataset['CRP'].fillna(dataset['CRP'].median(), inplace=True)
+dataset['Vit D'].fillna(dataset['Vit D'].median(), inplace=True)
+dataset['Cr'].fillna(dataset['Cr'].median(), inplace=True)
+dataset['AST'].fillna(dataset['AST'].median(), inplace=True)
+dataset['ALT'].fillna(dataset['ALT'].median(), inplace=True)
+dataset['PRL'].fillna(dataset['PRL'].median(), inplace=True)
+
+# Convert 'RBC' to numeric, coercing errors to NaN and Replace null with median
+dataset['RBC'] = pd.to_numeric(dataset['RBC'], errors='coerce')
+dataset['RBC'].fillna(dataset['RBC'].median(), inplace=True)
+
+#Again check if there is null in data
+dataset.isnull().sum()
+
+dataset["Class"].value_counts()
+
+custom_palette = ["#8E44AD", "#3498DB", "#E74C3C", "#27AE60"]
+sns.set(style="whitegrid")
+plt.figure(figsize=(6, 4))
+sns.countplot(x='Class', data=dataset, palette=custom_palette)
+plt.title('Distribution of Classes')
+plt.xlabel('Class')
+plt.ylabel('Count')
+
+# Convert y-axis to percentage
+total = float(len(dataset['Class']))
+for p in plt.gca().patches:
+    height = p.get_height()
+    plt.gca().text(p.get_x() + p.get_width() / 2, height + 0.1, '{:.1%}'.format(height / total), ha='center')
+
+plt.show()
+
+#pie chart for gender distribution within the "Hypo" class
+hypo = dataset[dataset['Class'] == "Hypo"]
+plt.figure(figsize=(8,6))
+plt.pie(x=hypo.Gender.value_counts(),
+        labels=['Female', 'Male'],
+        startangle=90,
+        colors=['springgreen', 'orange'],
+        autopct='%1.1f%%'
+       )
+plt.legend()
+plt.title("Hypothyroidism")
+plt.show()
+
+sns.set(rc={'figure.figsize': [10, 8]}, font_scale=1.2)
+dataset['Age'] = pd.to_numeric(dataset['Age'], errors='coerce')
+
+bins = np.arange(0, 110, 10)
+sns.histplot(dataset['Age'].dropna(), bins=bins, kde=False)
+plt.xticks(np.arange(0, 101, 10))
+plt.show()
+
+# Conclusion: The most of patients who suffer from thyroid belonging to age group between 30-40
+
+colors = ['blue', 'green', 'red', 'Cyan']
+fig, axes = plt.subplots(3, 2, figsize=(20, 16))
+fig.suptitle('Numerical Attributes vs. Target Class')
+sns.set_style('whitegrid')
+
+# TSH vs. 'target class'
+sns.stripplot(x=dataset.Class, y=dataset.TSH, linewidth=0.6, jitter=0.3, ax=axes[0, 0], hue=dataset.Class, palette=colors)
+# FT3 vs. 'target class'
+sns.stripplot(x=dataset.Class, y=dataset.FT3, linewidth=0.6, jitter=0.3, ax=axes[0, 1], hue=dataset.Class, palette=colors)
+# FT4 vs. 'target class'
+sns.stripplot(x=dataset.Class, y=dataset.FT4, linewidth=0.6, jitter=0.3, ax=axes[1, 0], hue=dataset.Class, palette=colors)
+# T3 vs. 'target class'
+sns.stripplot(x=dataset.Class, y=dataset.T3, linewidth=0.6, jitter=0.3, ax=axes[1, 1], hue=dataset.Class, palette=colors)
+# T4 vs. 'target class'
+sns.stripplot(x=dataset.Class, y=dataset.T4, linewidth=0.6, jitter=0.3, ax=axes[2, 0], hue=dataset.Class, palette=colors)
+# TPOAb vs. 'target'
+sns.stripplot(x=dataset.Class, y=dataset.TPOAb, linewidth=0.6, jitter=0.3, ax=axes[2, 1], hue=dataset.Class, palette=colors)
+plt.show()
+
+#creating a pairplot of our numeric variables and seeing if we can spot any clusters forming between variables
+pairplot = dataset[['Age','TSH', 'FT3', 'FT4', 'T3', 'T4','TPOAb','IgE','Class']].copy()
+sns.set_style('whitegrid');
+sns.pairplot(pairplot, hue='Class', height=3);
+plt.show()
+
+dataset_corr = dataset.corr()
+annot_font_size = 8
+plt.figure(figsize=(10,8))
+sns.heatmap(dataset_corr, cmap='viridis', linecolor='k', annot=True, vmax=.4, square=True, linewidths=0.1, fmt='.1f', annot_kws={"size": annot_font_size})
+plt.show()
