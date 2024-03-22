@@ -1,0 +1,40 @@
+X = dataset.drop('Class', axis=1)
+y = dataset['Class']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+rf_classifier = RandomForestClassifier(criterion='gini', max_depth=9, max_features='auto', n_estimators=50, random_state=42)
+rf_classifier.fit(X_train, y_train)
+y_pred = rf_classifier.predict(X_test)
+
+target_names = ['Normal', 'Hypo', 'Hyper', 'Sick-euthyroidism']
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+tn = conf_matrix[0, 0]
+fp = conf_matrix[0, 1] + conf_matrix[0, 2] + conf_matrix[0, 3]  # Summing up FP for classes 'Hypo', 'Hyper', and 'Sick-euthyroidism'
+fn = conf_matrix[1, 0] + conf_matrix[2, 0] + conf_matrix[3, 0]  # Summing up FN for classes 'Hypo', 'Hyper', and 'Sick-euthyroidism'
+tp = conf_matrix[1, 1] + conf_matrix[1, 2] + conf_matrix[1, 3] + conf_matrix[2, 1] + conf_matrix[2, 2] + conf_matrix[2, 3] + conf_matrix[3, 1] + conf_matrix[3, 2] + conf_matrix[3, 3] # Summing up TP for all classes
+
+precision = precision_score(y_test, y_pred, average='macro')
+recall = recall_score(y_test, y_pred, average='macro')
+f1 = f1_score(y_test, y_pred, average='macro')
+fnr = fn / (fn + tp)
+fpr = fp / (fp + tn)
+
+print(f"Accuracy: {accuracy:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall: {recall:.4f}")
+print(f"F1-Score: {f1:.4f}")
+print(f"False Negative Rate: {fnr:.4f}")
+print(f"False Positive Rate: {fpr:.4f}")
+print("Classification Report:")
+print(classification_report(y_test, y_pred, target_names=target_names))
+
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt="d", cmap="YlGnBu", xticklabels=['Normal', 'Hypo', 'Hyper', 'Sick-euthyroid'], yticklabels=['Normal', 'Hypo', 'Hyper', 'Sick-euthyroid'])
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.title('RF')
+plt.show()
