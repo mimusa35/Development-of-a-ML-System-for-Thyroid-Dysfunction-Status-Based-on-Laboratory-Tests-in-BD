@@ -1,0 +1,32 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+import seaborn as sns
+%matplotlib inline
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression, SGDClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
+from xgboost import XGBClassifier
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, roc_auc_score, precision_recall_curve
+from sklearn.metrics import roc_curve, auc, precision_score, recall_score, f1_score
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, VotingClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.preprocessing import LabelEncoder
+from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.feature_selection import RFE
+import pickle
+import warnings
+warnings.filterwarnings('ignore')
+
+dataset = pd.read_csv("thyroid_dysfunction_Bangladesh.csv")
+dataset
+
+dataset.fillna(method='ffill', inplace=True)
+dataset.head(5)
