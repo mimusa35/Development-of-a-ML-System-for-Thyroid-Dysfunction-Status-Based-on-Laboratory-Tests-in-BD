@@ -1,0 +1,22 @@
+from scipy.stats import ttest_rel
+metrics = {
+    'Decision Tree': {'Accuracy': 0.9043, 'Precision': 0.8381, 'Recall': 0.8393, 'F1-Score': 0.8376},
+    'Gradient Boosting': {'Accuracy': 0.9067, 'Precision': 0.8428, 'Recall': 0.8185, 'F1-Score': 0.8270},
+    'XGB': {'Accuracy': 0.9085, 'Precision': 0.8463, 'Recall': 0.8087, 'F1-Score': 0.8214},
+    'Random Forest': {'Accuracy': 0.9031, 'Precision': 0.8398, 'Recall': 0.8081, 'F1-Score': 0.8177},
+    'CatBoost': {'Accuracy': 0.9110, 'Precision': 0.8504, 'Recall': 0.8476, 'F1-Score': 0.8478},
+    'Voting Classifier': {'Accuracy': 0.9055, 'Precision': 0.8471, 'Recall': 0.8066, 'F1-Score': 0.8198}
+}
+
+t_test_results = {}
+
+classifiers = list(metrics.keys())
+for i in range(len(classifiers)):
+    for j in range(i+1, len(classifiers)):
+        clf1 = classifiers[i]
+        clf2 = classifiers[j]
+        t_statistic, p_value = ttest_rel(list(metrics[clf1].values()), list(metrics[clf2].values()))
+        t_test_results[f'{clf1} vs {clf2}'] = {'T-Statistic': t_statistic, 'P-Value': p_value}
+
+for comparison, results in t_test_results.items():
+    print(f"{comparison}: T-Statistic = {results['T-Statistic']}, P-Value = {results['P-Value']}")
