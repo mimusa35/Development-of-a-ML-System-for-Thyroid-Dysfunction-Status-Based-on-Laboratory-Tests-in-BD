@@ -1,0 +1,16 @@
+param_grid = {
+    'n_estimators': [50, 100, 150],
+    'max_depth': [4, 6, 8],
+    'learning_rate': [0.1, 0.2, 0.3]
+}
+
+catboost_classifier = CatBoostClassifier(n_estimators=50, max_depth=7, verbose=False, random_state=55, learning_rate=0.2)
+
+grid_search = GridSearchCV(estimator=catboost_classifier, param_grid=param_grid, cv=3, n_jobs=-1)     # Instantiate the GridSearchCV object
+
+grid_search.fit(X_train, y_train)
+print("Best parameters:", grid_search.best_params_)
+
+best_catboost_classifier = grid_search.best_estimator_  
+accuracy = best_catboost_classifier.score(X_test, y_test)
+print(f"Accuracy of the best model: {accuracy:.4f}")
