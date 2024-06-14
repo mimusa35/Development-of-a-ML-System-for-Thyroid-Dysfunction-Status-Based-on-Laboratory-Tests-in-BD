@@ -1,0 +1,36 @@
+import time
+start_time = time.time()
+label_encoder = LabelEncoder()
+y_encoded = label_encoder.fit_transform(y)
+X_train, X_test, y_train_encoded, y_test_encoded = train_test_split(X, y_encoded, test_size=0.3, random_state=42)
+
+dt_classifier = DecisionTreeClassifier(criterion='entropy', max_depth=7, min_samples_split=25, min_samples_leaf=3, min_impurity_decrease=0.0, random_state=0)
+sgb_classifier = GradientBoostingClassifier(random_state=42, n_estimators=40, criterion='friedman_mse', max_depth=3, learning_rate=0.1, min_samples_split=50, min_samples_leaf=4)
+xgb_classifier = XGBClassifier(random_state=0, n_estimators=110, max_depth=2, learning_rate=0.1)
+catboost_classifier = CatBoostClassifier(n_estimators=50, max_depth=7, verbose=False, random_state=55, learning_rate=0.2)
+rf_classifier = RandomForestClassifier(criterion='gini', max_depth=9, max_features='auto', n_estimators=55, random_state=35)
+voting_classifier = VotingClassifier(estimators=[
+    ('DT', dt_classifier),
+    ('SGB', sgb_classifier),
+    ('XGBoost', xgb_classifier),
+    ('RF', rf_classifier)
+], voting='soft')
+
+classifiers = [
+    ('DT', dt_classifier),
+    ('SGB', sgb_classifier),
+    ('XGBoost', xgb_classifier),
+    ('RF', rf_classifier),
+    ('CatBoost', catboost_classifier),
+    ('Voting', voting_classifier)
+]
+
+for clf_name, classifier in classifiers:
+    start_fit_time = time.time()
+
+    classifier.fit(X_train, y_train_encoded)
+
+    end_fit_time = time.time()
+    elapsed_fit_time = end_fit_time - start_fit_time
+
+    print(f"Fitting time for {clf_name}: {elapsed_fit_time:.2f} seconds")
