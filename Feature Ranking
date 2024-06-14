@@ -1,0 +1,28 @@
+feature_importances = catboost_classifier.feature_importances_
+X_columns = X.columns
+
+num_features = len(X_columns)
+colors = plt.cm.rainbow(np.linspace(0, 1, num_features))
+
+fig, ax = plt.subplots(figsize=(9, 5))
+bars = ax.barh(range(len(feature_importances)), feature_importances, color=colors)
+ax.set_yticks(range(len(X_columns)))
+ax.set_yticklabels(X_columns)
+ax.set_xlabel('Feature Importance Score')
+ax.set_ylabel('Features')
+ax.set_title("Visualizing Important Features For CatBoost", {'fontsize': 10})
+plt.show()
+
+X = dataset.drop('Class', axis=1)
+y = dataset['Class']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+classifier = CatBoostClassifier(n_estimators=50, max_depth=7, verbose=False, random_state=55, learning_rate=0.2) #catboost best performing model
+
+rfe = RFE(classifier, n_features_to_select=1)   # Initialize and fit RFE
+rfe.fit(X_train, y_train)
+
+feature_ranking = pd.DataFrame({'Feature': X_train.columns, 'Ranking': rfe.ranking_})  # Get the ranking of each feature and Sort them based on their ranking
+sorted_features = feature_ranking.sort_values(by='Ranking')
+print(sorted_features)
